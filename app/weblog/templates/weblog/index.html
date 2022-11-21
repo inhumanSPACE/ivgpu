@@ -1,0 +1,45 @@
+{% extends 'weblog/base.html' %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<li class="last"> {{user.username}} | <a href="{% url 'logout' %}">Выйти</a></li>
+
+{% else %}
+<li class="last"><a href="{% url 'login' %}">Войти | <a href="{% url 'signup' %}">Регистрация</a></li>
+
+{% endif %}
+
+<h1>Статьи</h1>
+
+{% if request.user.is_authenticated %}
+<form action="{% url 'create' %}" method="post">{% csrf_token %}
+     {{ form.as_p }}
+     <input type="submit" value="добавить запись" />
+ </form>
+
+{% endif %}
+
+<ul>
+    {% for article in articles %}
+    <li>
+        <h3>{{article.author}}</h3>
+        <h2>{{article.name}}</h2>
+        <p>{{article.content}}</p>
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'update' article.id %}" method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="изменить" />
+        </form>
+
+        <form action="{% url 'delete' article.id %}" method="post">{% csrf_token %}
+
+	        <input type="submit" value="удалить">
+        </form>
+        <hr>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
